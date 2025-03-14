@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math +-x%</title>
+    <title>Math IQ Test</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,74 +18,82 @@
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        input {
-            padding: 10px;
-            font-size: 16px;
-            width: 80%;
-            margin-top: 10px;
+        #emoji {
+            font-size: 50px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Math +-x%</h1>
-        <p id="problem">Click the button to generate a math problem!</p>
+        <h1>Math IQ Test</h1>
+        <p id="emoji">🫠</p>
+        <p>IQ: <span id="iq">50</span></p>
+        <p id="problem">Click the button to start!</p>
         <input type="text" id="answer" placeholder="Enter your answer here">
-        <button onclick="checkAnswer()">Check Answer</button>
+        <button onclick="checkAnswer()">Submit Answer</button>
         <p id="feedback"></p>
-        <button onclick="generateProblem()">Generate New Problem</button>
+        <button onclick="generateProblem()">New Problem</button>
     </div>
 
     <script>
-        const problems = [
-            { question: "Solve for x: 2x+5=15", answer: "5" },
-            { question: "Factorize: x^2-5x+6", answer: "(x-2)(x-3)" },
-            { question: "Find the roots: x^2-4x-12=0", answer: "6,-2" },
-            { question: "Simplify: (3x+2)^2", answer: "9x^2+12x+4" },
-            { question: "Find the area of a triangle with base 10 and height 5", answer: "25" },
-            { question: "Solve for y: 3y-7=11", answer: "6" },
-            { question: "Calculate the slope of the line passing through (3,4) and (7,10)", answer: "1.5" },
-            { question: "Expand: (x-3)(x+4)", answer: "x^2+x-12" },
-            { question: "If a=3 and b=4, find the value of a^2+b^2", answer: "25" },
-            { question: "Solve for x: x^2 + 3x - 10 = 0", answer: "2,-5" },
-            { question: "Find 15% of 200", answer: "30" },
-            { question: "What is 2^6?", answer: "64" },
-            { question: "Solve: 5x - 8 = 12", answer: "4" },
-            { question: "If x=2, what is the value of 3x^2 + 4x?", answer: "22" },
-            { question: "What is the value of log(100)?", answer: "2" }
-        ];
-
+        let iq = 50;
+        let iqLevels = ["🫠", "😵", "😐", "🙂", "😀", "😃", "🤓", "🧐", "😎", "🧠", "🚀", "💡", "⚡", "🌟", "🔮"];
         let currentProblem = {};
 
         function generateProblem() {
-            const randomIndex = Math.floor(Math.random() * problems.length);
-            currentProblem = problems[randomIndex];
-            document.getElementById("problem").innerText = currentProblem.question;
-            document.getElementById("answer").value = "";
-            document.getElementById("feedback").innerText = "";
-        }
+            const problemTypes = ['quadratic', 'linear', 'exponential'];
+            let type = problemTypes[Math.floor(Math.random() * problemTypes.length)];
+            let problemText, solution;
 
-        function normalizeAnswer(answer) {
-            return answer.replace(/\s+/g, "").replace(/\^/g, "^")
-                         .replace(/\+/g, "+").replace(/-/g, "-")
-                         .replace(/,/g, "");
+            if (type === 'quadratic') {
+                let a = Math.floor(Math.random() * 10) + 1;
+                let b = Math.floor(Math.random() * 20) - 10;
+                let c = Math.floor(Math.random() * 20) - 10;
+                problemText = `Solve for x: ${a}x² + ${b}x + ${c} = 0`;
+                let discriminant = b * b - 4 * a * c;
+                if (discriminant < 0) {
+                    solution = "No real solution";
+                } else {
+                    let x1 = ((-b + Math.sqrt(discriminant)) / (2 * a)).toFixed(2);
+                    let x2 = ((-b - Math.sqrt(discriminant)) / (2 * a)).toFixed(2);
+                    solution = discriminant === 0 ? `${x1}` : `${x1}, ${x2}`;
+                }
+            } else if (type === 'linear') {
+                let m = Math.floor(Math.random() * 10) + 1;
+                let b = Math.floor(Math.random() * 20) - 10;
+                let x = Math.floor(Math.random() * 20) - 10;
+                let y = m * x + b;
+                problemText = `Solve for x: ${m}x + ${b} = ${y}`;
+                solution = x;
+            } else if (type === 'exponential') {
+                let base = Math.floor(Math.random() * 5) + 2;
+                let exponent = Math.floor(Math.random() * 4) + 1;
+                let result = Math.pow(base, exponent);
+                problemText = `Solve for x: ${base}^x = ${result}`;
+                solution = exponent;
+            }
+
+            currentProblem = { text: problemText, answer: solution.toString() };
+            document.getElementById("problem").innerText = problemText;
         }
 
         function checkAnswer() {
-            const userAnswer = normalizeAnswer(document.getElementById("answer").value.trim());
-            const correctAnswer = normalizeAnswer(currentProblem.answer);
-            if (userAnswer === correctAnswer) {
-                document.getElementById("feedback").innerText = "Correct! 🎉";
-                document.getElementById("feedback").style.color = "green";
+            let userAnswer = document.getElementById("answer").value.trim();
+            if (userAnswer === currentProblem.answer) {
+                iq += 5;
+                document.getElementById("iq").innerText = iq;
+                document.getElementById("feedback").innerText = "Correct!";
+                updateEmoji();
+                generateProblem();
             } else {
-                document.getElementById("feedback").innerText = "Incorrect. Try again!";
-                document.getElementById("feedback").style.color = "red";
+                document.getElementById("feedback").innerText = "Wrong! Try again.";
             }
+            document.getElementById("answer").value = "";
+        }
+
+        function updateEmoji() {
+            let level = Math.min(Math.floor(iq / 10), iqLevels.length - 1);
+            document.getElementById("emoji").innerText = iqLevels[level];
         }
     </script>
 </body>
